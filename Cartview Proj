@@ -1,0 +1,152 @@
+package com.example.demo6;
+
+
+import com.example.demo6.MainClass;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+
+public class CartView {
+    private final Stage primaryStage;
+    private final BorderPane root;
+    private double totalPrice = 0.0;
+
+    // Constructor to initialize the cart and total price
+    public CartView(Stage primaryStage, BorderPane root) {
+        this.primaryStage = primaryStage;
+        this.root = root;
+
+        // Initialize cart with sample data
+
+    }
+
+    // Static method to return the entire Scene for viewing the cart
+    public static Scene viewCart(Stage primaryStage, BorderPane root) {
+        CartView cartView = new CartView(primaryStage, root);
+
+        // Create the root layout (BorderPane)
+        BorderPane rootPane = new BorderPane();
+
+        // Create the main layout (VBox) and add it to the center of the root
+        VBox mainLayout = cartView.createMainLayout();
+        rootPane.setCenter(mainLayout);
+
+        // Create the scene using the root layout
+        Scene scene = new Scene(rootPane, 800, 600);
+        return scene;
+    }
+
+    // Create the main layout (VBox)
+    private VBox createMainLayout() {
+        VBox vbox = new VBox(10); // 10px spacing
+        vbox.setPadding(new Insets(20));
+        vbox.setStyle("-fx-background-color: #F5DEB3; -fx-border-color: black;");
+        vbox.setAlignment(Pos.CENTER);
+
+        // Add header
+        vbox.getChildren().add(createHeader());
+
+        // Add cart details grid
+        vbox.getChildren().add(createCartDetailsGrid());
+
+        // Add action buttons
+        vbox.getChildren().add(createActionButtons());
+
+        return vbox;
+    }
+
+    // Create the header label
+    private Label createHeader() {
+        Label header = new Label("Your Cart");
+        header.setFont(new Font("Georgia", 24));
+        header.setTextFill(Color.SADDLEBROWN);
+        return header;
+    }
+
+    // Create a grid layout to display cart details
+    private GridPane createCartDetailsGrid() {
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(15);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10, 0, 10, 0));
+
+        // Add column headers
+        addGridHeaders(grid);
+
+        // Add cart items
+        int row = 1;
+        for (com.example.demo6.Items item : com.example.demo6.Items.list) {
+            grid.add(new Label(item.getName()), 0, row);
+            grid.add(new Label(String.valueOf(item.getQuantity())), 1, row);
+            grid.add(new Label("Rs" + String.format("%.2f", (double)item.getPrice())), 2, row);
+            grid.add(new Label("Rs" + String.format("%.2f", (double)item.getAmount())), 3, row);
+            row++;
+            totalPrice += (double)item.getAmount();
+        }
+
+        // Add total price row
+        addTotalRow(grid, row);
+
+        return grid;
+    }
+
+    // Add headers to the grid
+    private void addGridHeaders(GridPane grid) {
+        String[] headers = {"Description", "Quantity", "Price", "Amount"};
+        for (int i = 0; i < headers.length; i++) {
+            Label header = new Label(headers[i]);
+            header.setFont(new Font("Georgia", 16));
+            header.setTextFill(Color.SADDLEBROWN);
+            grid.add(header, i, 0);
+        }
+    }
+
+    // Add the total row to the grid
+    private void addTotalRow(GridPane grid, int row) {
+        Label totalLabel = new Label("TOTAL:");
+        totalLabel.setFont(new Font("Georgia", 16));
+        totalLabel.setTextFill(Color.BLACK);
+        grid.add(totalLabel, 2, row);
+
+        Label totalAmountLabel = new Label("Rs" + String.format("%.2f", totalPrice));
+        totalAmountLabel.setFont(new Font("Georgia", 16));
+        totalAmountLabel.setTextFill(Color.BLACK);
+        grid.add(totalAmountLabel, 3, row);
+    }
+
+    // Create the action buttons (Cancel and Proceed to Checkout)
+    private HBox createActionButtons() {
+        HBox buttonsBox = new HBox(20); // 20px spacing
+        buttonsBox.setAlignment(Pos.CENTER);
+
+        // Cancel button
+        Button cancelButton = new Button("CANCEL");
+        cancelButton.setStyle("-fx-background-color: #8B4513; -fx-text-fill: white;");
+        cancelButton.setOnAction(e -> {
+            System.out.println("Cancelled. Navigating back...");
+            MainClass obj = new MainClass();
+            // obj.start(primaryStage);
+        });
+
+        // Proceed to checkout button
+        Button checkoutButton = new Button("PROCEED TO CHECKOUT");
+        checkoutButton.setStyle("-fx-background-color: #8B4513; -fx-text-fill: white;");
+        checkoutButton.setOnAction(e -> {
+            com.example.demo6.ReceiptView receiptView = new com.example.demo6.ReceiptView(primaryStage, root, totalPrice);
+            primaryStage.setScene(receiptView.show());
+        });
+
+        buttonsBox.getChildren().addAll(cancelButton, checkoutButton);
+        return buttonsBox;
+    }
+}

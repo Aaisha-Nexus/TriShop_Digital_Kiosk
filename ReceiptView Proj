@@ -1,0 +1,143 @@
+package com.example.demo6;
+
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class ReceiptView {
+    private final BorderPane root;
+
+    private final double totalPrice;
+
+    public ReceiptView(Stage primaryStage, BorderPane root, double totalPrice) {
+        this.root = root;
+        this.totalPrice = totalPrice;
+    }
+
+    public Scene show() {
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: #F5DEB3; -fx-border-color: black; -fx-padding: 20px; -fx-spacing: 10px;");
+        vbox.setAlignment(Pos.CENTER);
+
+        // Current date and time
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
+
+        // Header
+        Label header = new Label("INVOICE");
+        header.setFont(new Font("Georgia", 24));
+        header.setTextFill(Color.SADDLEBROWN);
+        vbox.getChildren().add(header);
+
+        Line divider = new Line(0, 0, 350, 0);
+        divider.setStroke(Color.SADDLEBROWN);
+        vbox.getChildren().add(divider);
+
+        // Date and time labels
+        Label dateLabel = new Label("Date: " + now.format(dateFormatter));
+        dateLabel.setFont(new Font("Georgia", 14));
+        dateLabel.setTextFill(Color.SADDLEBROWN);
+        vbox.getChildren().add(dateLabel);
+
+        Label timeLabel = new Label("Time: " + now.format(timeFormatter));
+        timeLabel.setFont(new Font("Georgia", 14));
+        timeLabel.setTextFill(Color.SADDLEBROWN);
+        vbox.getChildren().add(timeLabel);
+
+        Line divider2 = new Line(0, 0, 350, 0);
+        divider2.setStroke(Color.SADDLEBROWN);
+        vbox.getChildren().add(divider2);
+
+        // Grid for item details
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(5);
+        grid.setPadding(new Insets(10, 0, 10, 0));
+
+        Label descriptionHeader = new Label("Description");
+        descriptionHeader.setFont(new Font("Georgia", 16));
+        descriptionHeader.setTextFill(Color.SADDLEBROWN);
+        grid.add(descriptionHeader, 0, 0);
+
+        Label quantityHeader = new Label("Quantity");
+        quantityHeader.setFont(new Font("Georgia", 16));
+        quantityHeader.setTextFill(Color.SADDLEBROWN);
+        grid.add(quantityHeader, 1, 0);
+
+        Label priceHeader = new Label("Price");
+        priceHeader.setFont(new Font("Georgia", 16));
+        priceHeader.setTextFill(Color.SADDLEBROWN);
+        grid.add(priceHeader, 2, 0);
+
+        Label amountHeader = new Label("Amount");
+        amountHeader.setFont(new Font("Georgia", 16));
+        amountHeader.setTextFill(Color.SADDLEBROWN);
+        grid.add(amountHeader, 3, 0);
+
+        // Populate grid with cart items
+        int row = 1;
+        for (Items item : Items.list) {
+            grid.add(new Label(item.getName()), 0, row);
+            grid.add(new Label(String.valueOf(item.getQuantity())), 1, row);
+            grid.add(new Label(String.format("%.2f", (double)item.getPrice())), 2, row);
+            grid.add(new Label(String.format("%.2f", (double)item.getAmount())), 3, row);
+            row++;
+            //totalPrice += (double)item.getAmount();
+        }
+
+        vbox.getChildren().add(grid);
+
+        // Total price
+        Label totalLabel = new Label("Total: Rs " + String.format("%.2f", totalPrice));
+        totalLabel.setFont(new Font("Georgia", 18));
+        totalLabel.setTextFill(Color.SADDLEBROWN);
+        vbox.getChildren().add(totalLabel);
+
+        Line divider3 = new Line(0, 0, 350, 0);
+        divider3.setStroke(Color.SADDLEBROWN);
+        vbox.getChildren().add(divider3);
+
+        // Add thank you note
+        Label thankYou = new Label("Thank you for sipping with us- until next cup!");
+        thankYou.setFont(new Font("Georgia", 14));
+        thankYou.setTextFill(Color.SADDLEBROWN);
+        vbox.getChildren().add(thankYou);
+
+        // Add barcode
+        GridPane barcode = new GridPane();
+        barcode.setHgap(1.5); // Space between bars
+        barcode.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < 40; i++) { // Adjust the number of bars as needed
+            Rectangle bar = new Rectangle(2, 60); // Width and shorter height of each bar
+            if (Math.random() > 0.5) {
+                bar.setFill(Color.BLACK); // Black bars
+            } else {
+                bar.setFill(Color.TRANSPARENT); // Transparent spaces
+            }
+            barcode.add(bar, i, 0);
+        }
+        vbox.getChildren().add(barcode);
+
+        // Add VBox to the root layout
+        root.setCenter(vbox);
+        Scene scene = new Scene(root);
+        return scene;
+    }
+}
+
