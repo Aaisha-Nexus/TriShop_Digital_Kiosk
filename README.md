@@ -32,6 +32,7 @@ TriShop is inspired by the **"Digital Display Screens"** commonly seen in modern
   - "Add-To-Cart" button to add items with price and customization to the cart.  
   - "Back" button for navigation to the previous scene.  
 
+
 #### 2. **Items (Items Class)**  
 - Represents individual menu items.  
 - Maintains a list of items selected by the customer.  
